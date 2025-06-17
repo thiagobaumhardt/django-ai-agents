@@ -1,0 +1,9 @@
+<h2>Bem-vindo {{ request.user.username }}</h2>
+<h3>Agentes disponíveis:</h3>
+<ul>
+    {% for agent in agents %}
+        <li><a href="/{{ agent }}/">{{ agent }}</a></li>
+    {% empty %}
+        <li>Nenhum agente disponível.</li>
+    {% endfor %}
+</ul>

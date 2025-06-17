@@ -1,0 +1,27 @@
+Quero criar um projeto web em django.
+
+Quero ter uma pagina de login. vou colocar os emails no .env por enquanto.
+
+o usuario vai criar uma conta normalmente. email e gerar uam senha. vai ter um esqueci minha senha.
+
+Os usuarios autorizados vao logar, o backend vai validar se está no .env 
+e redirecionar para a c4data-agents.com.br/ada-c4
+
+ada-c4 o nome do agente
+
+quando eu ter mais um agente, quero criar uma página inicial que vai mostrar para o usuarios 
+os agente sque ele possui acesso. mas isso pode ser depois, quero só direciona-lo para o ada-c4
+
+por exemplo
+
+usuario1: ada-c4, agent2
+usuario2: adac4
+usuario2: adac4, agent3
+
+quero criar apenas o agente ada-c4 por enquanto.
+
+ele vai ser um chat que vai consultar a api da openia, assistant, já possuo o id dele.
+
+
+
+python, django, html, css

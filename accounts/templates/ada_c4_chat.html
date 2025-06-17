@@ -1,0 +1,14 @@
+<h2>{{ agent_name }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <textarea name="message" rows="4" cols="50" placeholder="Digite sua pergunta..."></textarea><br>
+    <button type="submit">Enviar</button>
+</form>
+
+{% if response %}
+    <h3>Resposta:</h3>
+    <pre>{{ response }}</pre>
+{% endif %}
+
+<a href="/">Voltar ao menu</a>
