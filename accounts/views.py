@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.conf import settings
@@ -18,7 +17,7 @@ def agent_chat_view(request, agent_slug):
     openai.api_key = agent_config["api_key"]
     assistant_id = agent_config["assistant_id"]
     template = agent_config["template"]
-    agent_name = agent_slug  # Ou coloque um campo "name" se quiser um nome mais bonito
+    agent_name = agent_slug  # Ou personalize com um campo "name" se preferir
 
     response_text = None
 
@@ -42,7 +41,7 @@ def agent_chat_view(request, agent_slug):
                 assistant_id=assistant_id,
             )
 
-            # Esperar o run finalizar
+            # Esperar o run finalizar (atenção: bloqueia o worker!)
             while True:
                 run_status = openai.beta.threads.runs.retrieve(
                     thread_id=thread.id,
@@ -56,9 +55,9 @@ def agent_chat_view(request, agent_slug):
                 time.sleep(1)
 
             # Pegar a última resposta da thread
-            messages = openai.beta.threads.messages.list(thread_id=thread.id)
+            messages_list = openai.beta.threads.messages.list(thread_id=thread.id)
             response_parts = []
-            for msg in messages.data:
+            for msg in messages_list.data:
                 if msg.role == "assistant":
                     for content in msg.content:
                         if content.type == "text":
@@ -75,33 +74,12 @@ def agent_chat_view(request, agent_slug):
     return render(request, template, context)
 
 
-def home_redirect_view(request):
-    if request.user.is_authenticated:
-        return redirect('menu')
-    else:
-        return redirect('login')
-    
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+@login_required
+def menu_view(request):
+    user_email = request.user.username
+    agents = settings.USER_AGENT_ACCESS.get(user_email, [])
+    return render(request, 'menu.html', {"agents": agents})
 
-        if email not in settings.ALLOWED_EMAILS:
-            messages.error(request, 'Email não autorizado.')
-            return redirect('login')
-
-        user = authenticate(request, username=email, password=password)
-        if user:
-            login(request, user)
-            return redirect('menu')
-        else:
-            messages.error(request, 'Credenciais inválidas.')
-
-    return render(request, 'login.html')
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')
 
 def register_view(request):
     if request.method == 'POST':
@@ -125,11 +103,11 @@ def register_view(request):
 
     return render(request, 'register.html')
 
-def forgot_password_view(request):
-    return render(request, 'forgot_password.html')
 
-@login_required
-def menu_view(request):
-    user_email = request.user.username
-    agents = settings.USER_AGENT_ACCESS.get(user_email, [])
-    return render(request, 'menu.html', {"agents": agents})
+def home_redirect_view(request):
+    if request.user.is_authenticated:
+        return redirect('menu')
+    else:
+        # Redireciona para a URL padrão do Django auth login
+        from django.conf import settings
+        return redirect(settings.LOGIN_URL)

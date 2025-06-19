@@ -1,10 +1,39 @@
-<h2>Registrar</h2>
-<form method="post">
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 2rem; }
+    input, button { width: 100%; padding: 0.5rem; margin-top: 1rem; font-size: 1rem; }
+    .messages { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Cadastro</h1>
+
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
-    Email: <input type="text" name="email"><br>
-    Senha: <input type="password" name="password"><br>
-    <button type="submit">Criar Conta</button>
-</form>
-{% for message in messages %}
-<p>{{ message }}</p>
-{% endfor %}
+
+    <label for="id_email">Email:</label>
+    <input type="email" name="email" id="id_email" required autofocus />
+
+    <label for="id_password">Senha:</label>
+    <input type="password" name="password" id="id_password" required />
+
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <p>Já tem conta? <a href="{% url 'login' %}">Entrar</a></p>
+</body>
+</html>
